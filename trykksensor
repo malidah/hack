@@ -1,0 +1,76 @@
+import numpy as np
+import matplotlib.pyplot as plt
+
+f= open("./trykksensor.txt","r")
+data=f.read()
+test = data
+
+verdier=test.split("$")
+
+dobbelsplitt=[]
+for p in verdier:
+    if "ISDPT" in p:
+        q=p.split(\\r)
+        dobbelsplitt.append(q[0])
+
+lengde=len("ISDPT,-000.217,M,000.9954,B,65.88,C*23")
+korrektliste=[]
+for r in dobbelsplitt:
+    if len(r)==lengde or len(r)==lengde+1:
+        korrektliste.append(r)
+    else:
+        korrektliste.append(None)
+
+altimeter=[]
+barometer=[]
+temperatur=[]
+
+for t in korrektliste:
+    if t==None:
+        altimeter.append(t)
+        barometer.append(t)
+        temperatur.append(t)
+    else:
+        y=t.split(",")
+        if len(y)==7:
+            altimeter.append(y[1])
+            barometer.append(y[3])
+            temperatur.append(y[5])
+
+sensorer=[altimeter,barometer,temperatur]
+
+verdios=[0,1,21]
+margin=[2,0.2,20]
+
+for w in range(len(sensorer)):
+    for val in range(len(sensorer[w])):
+        if sensorer[w][val] != None:
+            sensorer[w][val]=float(sensorer[w][val])
+            if sensorer[w][val]>verdios[w]-margin[w] and sensorer[w][val]<verdios[w]+margin[w]:
+                None
+            else:
+                sensorer[w][val]=None
+        else:
+            None
+           
+
+antall=len(altimeter)
+
+x=np.linspace(0,antall/60,antall)
+y=np.zeros(antall)
+z=np.zeros(antall)
+d=np.zeros(antall)
+for n in range(antall):
+    y[n]=sensorer[0][n]
+    z[n]=sensorer[1][n]
+    d[n]=sensorer[2][n]
+
+
+plt.subplot(311)
+plt.plot(x,y)
+plt.subplot(312)
+plt.plot(x,z)
+plt.subplot(313)
+plt.plot(x,d)
+
+plt.show()
